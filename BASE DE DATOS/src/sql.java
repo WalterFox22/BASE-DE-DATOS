@@ -56,21 +56,34 @@ public class sql {
                     System.out.println(sqlException.getMessage());
                 }
             }*/
-                String url="jdbc:mysql://localhost:3306/estudiantes2024a";
-                String user="root";
-                String password="";
+                String URL = "jdbc:mysql://localhost:3306/ESTUDIATES2024A";
+                String user = "root";
+                String password = "123456";
 
-                try (Connection connection= DriverManager.getConnection(url,user,password)){
+                try (Connection connection = DriverManager.getConnection(URL, user, password)) {
                     System.out.println("Conectado a la base de datos");
-                    String query="select * from estudiantes where cedula=1736492203";
-                    Statement statement=connection.createStatement();
-                    ResultSet resultSet=statement.executeQuery(query);
-                    while(resultSet.next()){
-                        System.out.println(resultSet.getString("nombre"));
-                        nombreTxt.setText(resultSet.getString("nombre"));
+
+                    // Consulta para obtener el nombre del estudiante por cédula (ejemplo: 1736492203)
+                    String cedula = "1726195207"; // Puedes modificar la cédula según tus necesidades
+                    String query = "SELECT * FROM estudiantes WHERE cedula = ?";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setString(1, cedula);
+                    ResultSet resultSet = statement.executeQuery();
+
+                    if (resultSet.next()) {
+                        String nombre = resultSet.getString("nombre");
+                        System.out.println(nombre); // Solo para verificar en la consola
+
+                        // Establecer el nombre en el JLabel
+                        nombreTxt.setText(nombre);
+                    } else {
+                        // Manejar caso en el que no se encuentre el estudiante
+                        nombreTxt.setText("Estudiante no encontrado");
                     }
-                }catch (SQLException e1){
-                    System.out.println(e);}
+
+                } catch (SQLException sqlException) {
+                    System.out.println("Error al conectar a la base de datos: " + sqlException.getMessage());
+                }
             }
         });
     }
