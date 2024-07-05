@@ -2,13 +2,12 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.util.Scanner;
 
 public class sql {
     public JButton button1;
     public JPanel panel1;
-    public JTextArea calcularTextArea;
-    public JLabel nombreTxt;
+    public JTextField consultaTXT;
+    public JLabel resultadoTXT;
 
     public sql() {
         button1.addActionListener(new ActionListener() {
@@ -56,34 +55,36 @@ public class sql {
                     System.out.println(sqlException.getMessage());
                 }
             }*/
-                String URL = "jdbc:mysql://localhost:3306/ESTUDIATES2024A";
+                String URL = "jdbc:mysql://localhost:3306/ESTUDIATES2024";
                 String user = "root";
                 String password = "123456";
 
                 try (Connection connection = DriverManager.getConnection(URL, user, password)) {
                     System.out.println("Conectado a la base de datos");
-
-                    // Consulta para obtener el nombre del estudiante por cédula (ejemplo: 1736492203)
-                    String cedula = "1726195207"; // Puedes modificar la cédula según tus necesidades
-                    String query = "SELECT * FROM estudiantes WHERE cedula = ?";
-                    PreparedStatement statement = connection.prepareStatement(query);
-                    statement.setString(1, cedula);
-                    ResultSet resultSet = statement.executeQuery();
-
-                    if (resultSet.next()) {
+                    String query = "SELECT * FROM estudiantes WHERE cedula = '"+ consultaTXT.getText() + "'";
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(query);
+                    while (resultSet.next()) {
                         String nombre = resultSet.getString("nombre");
-                        System.out.println(nombre); // Solo para verificar en la consola
+                        String cedulaA = resultSet.getString("cedula");
+                        int b1 = resultSet.getInt("b1");
+                        int b2 = resultSet.getInt("b2");
 
-                        // Establecer el nombre en el JLabel
-                        nombreTxt.setText(nombre);
-                    } else {
-                        // Manejar caso en el que no se encuentre el estudiante
-                        nombreTxt.setText("Estudiante no encontrado");
+                        float promedio= (b1+b2)/2;
+
+                    String resultado = "Nombre: " + nombre + "\n" + "Cedula: " + cedulaA + "\n" + "nota B1: " + b1 + "\n" + "nota B2: " + b2 + "\n" + "promedio: " + promedio + "\n";
+                    resultadoTXT.setText(resultado);
                     }
-
-                } catch (SQLException sqlException) {
-                    System.out.println("Error al conectar a la base de datos: " + sqlException.getMessage());
+                } catch (SQLException e1) {
+                    System.out.println(e1.getMessage());
                 }
+            }
+        });
+        consultaTXT.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                resultadoTXT.setText("");
+
             }
         });
     }
